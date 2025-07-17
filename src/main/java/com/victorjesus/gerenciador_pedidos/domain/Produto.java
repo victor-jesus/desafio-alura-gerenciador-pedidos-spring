@@ -2,17 +2,24 @@ package com.victorjesus.gerenciador_pedidos.domain;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "produto")
 public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    Long id;
+    private Long id;
     @Column
-    String nome;
+    private String nome;
     @Column(name = "valor")
-    Double preco;
+    private Double preco;
+    @ManyToOne
+    private Categoria categoria;
+    @ManyToMany(mappedBy = "produtos")
+    private List<Pedido> pedidos = new ArrayList<>();
 
     public Produto(String nome, Double preco) {
         this.nome = nome;
@@ -20,6 +27,14 @@ public class Produto {
     }
 
     public Produto(){}
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
 
     public Long getId() {
         return id;
@@ -48,8 +63,9 @@ public class Produto {
     @Override
     public String toString() {
         return "\nProduto: " +
-                "\nId: " + id +
-                "\nNome='" + nome + '\'' +
-                ",\nPreco=" + preco + "\n";
+                "\nId: '" + id + '\'' +
+                "\nNome: '" + nome + '\'' +
+                "\nPreco: " + preco + "\'" +
+                "\nCategoria: " + categoria.getNome();
     }
 }

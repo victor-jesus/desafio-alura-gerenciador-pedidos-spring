@@ -4,6 +4,7 @@ import com.victorjesus.gerenciador_pedidos.domain.Produto;
 import com.victorjesus.gerenciador_pedidos.repository.ProdutoRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ProdutoService<T> implements IPersistance<Produto> {
     private ProdutoRepository produtoRepository;
@@ -15,6 +16,11 @@ public class ProdutoService<T> implements IPersistance<Produto> {
     @Override
     public List<Produto> list(){
         return produtoRepository.findAll();
+    }
+
+    @Override
+    public Optional<Produto> buscarPorId(Long id) {
+        return produtoRepository.getProdutoById(id);
     }
 
     @Override

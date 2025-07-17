@@ -3,6 +3,8 @@ package com.victorjesus.gerenciador_pedidos.domain;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "pedido")
@@ -10,9 +12,14 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    Long id;
+    private Long id;
     @Column
-    LocalDate data;
+    private LocalDate data;
+    @ManyToMany
+    @JoinTable(name = "pedido_produto",
+    joinColumns = @JoinColumn(name = "pedido_id"),
+    inverseJoinColumns = @JoinColumn(name = "produto_id"))
+    private List<Produto> produtos = new ArrayList<>();
 
     public Pedido(Long id, LocalDate data) {
         this.id = id;

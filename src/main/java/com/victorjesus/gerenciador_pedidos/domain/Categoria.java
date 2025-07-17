@@ -2,22 +2,34 @@ package com.victorjesus.gerenciador_pedidos.domain;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "categoria")
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    Long id;
+    private Long id;
     @Column
-    String nome;
+    private String nome;
+    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Produto> produtos;
 
-    public Categoria(Long id, String nome) {
-        this.id = id;
+    public Categoria(String nome) {
         this.nome = nome;
     }
 
     public Categoria() {
+    }
+
+    public List<Produto> getProdutos() {
+        return produtos;
+    }
+
+    public void setProdutos(List<Produto> produtos) {
+        produtos.forEach(p -> p.setCategoria(this));
+        this.produtos = produtos;
     }
 
     public Long getId() {
@@ -38,9 +50,9 @@ public class Categoria {
 
     @Override
     public String toString() {
-        return "Categoria{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                '}';
+        return "\nCategoria" +
+                "\nId: '" + id + '\'' +
+                "\nNome: '" + nome + '\'' +
+                "\nProdutos: '" + produtos;
     }
 }
