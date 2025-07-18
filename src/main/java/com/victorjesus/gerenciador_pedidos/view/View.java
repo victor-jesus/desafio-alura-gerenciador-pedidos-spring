@@ -55,7 +55,7 @@ public class View {
             switch(option){
                 case 1: {
                     System.out.println("Listando...");
-                    getProdutos().forEach(System.out::println);
+                    listProdutos().forEach(System.out::println);
                     break;
                 }
                 case 2: {
@@ -65,27 +65,27 @@ public class View {
                 }
                 case 3:{
                     System.out.println("Listando...");
-                    listarCategorias().forEach(System.out::println);
+                    listCategorias().forEach(System.out::println);
                     break;
                 }
                 case 4: {
-                    criarCategoria();
+                    saveCategoria();
                     break;
                 }
                 case 5: {
-                    criarPedido();
+                    savePedido();
                     break;
                 }
                 case 6: {
-                    listarPedidos().forEach(System.out::println);
+                    listPedidos().forEach(System.out::println);
                     break;
                 }
                 case 7: {
-                    salvarFornecedor();
+                    saveFornecedor();
                     break;
                 }
                 case 8: {
-                    listarFornecedores().forEach(System.out::println);
+                    listFornecedores().forEach(System.out::println);
                     break;
                 }
                 case 0: {
@@ -98,11 +98,11 @@ public class View {
         } while(option != 0);
     }
 
-    private List<Fornecedor> listarFornecedores() {
+    private List<Fornecedor> listFornecedores() {
         return fornecedorService.list();
     }
 
-    private void salvarFornecedor() {
+    private void saveFornecedor() {
         System.out.print("Digite o nome do fornecedor: ");
         String nomeFornecedor = scanner.nextLine();
 
@@ -110,14 +110,14 @@ public class View {
         System.out.println("--- Fornecedor salvo ---");
     }
 
-    private List<Pedido> listarPedidos() {
+    private List<Pedido> listPedidos() {
         System.out.println("--- Listando ---");
         return pedidoService.list();
     }
 
-    private void criarPedido() {
+    private void savePedido() {
         System.out.println("----");
-        getProdutos().forEach(p -> System.out.println(" ID: " + p.getId() + " - " + p.getNome() + " - " + p.getCategoria().getNome() + " (" + p.getPreco() + ")"));
+        listProdutos().forEach(p -> System.out.println(" ID: " + p.getId() + " - " + p.getNome() + " - " + p.getCategoria().getNome() + " (" + p.getPreco() + ")"));
         System.out.println("Digite os Ids dos produtos (Separados por virgula): ");
         var idsProdutos = scanner.nextLine();
 
@@ -141,7 +141,7 @@ public class View {
         }
     }
 
-    private void criarCategoria() {
+    private void saveCategoria() {
         System.out.print("Digite o nome da nova categoria: ");
         String nome = scanner.nextLine();
 
@@ -149,11 +149,11 @@ public class View {
         System.out.println("Categoria salva com sucesso!");
     }
 
-    private List<Categoria> listarCategorias() {
+    private List<Categoria> listCategorias() {
         return categoriaService.list();
     }
 
-    private List<Produto> getProdutos(){
+    private List<Produto> listProdutos(){
         return this.produtoService.list();
     }
 
@@ -165,14 +165,14 @@ public class View {
         double precoProduto = OptionalDouble.of(Double.parseDouble(scanner.nextLine())).orElse(0.0);
 
         System.out.println("Categorias Disponíveis: ");
-        listarCategorias().forEach(c -> System.out.println(c.getId() + " - " + c.getNome()));
+        listCategorias().forEach(c -> System.out.println(c.getId() + " - " + c.getNome()));
 
         System.out.println("Digite o Id da categoria do produto: ");
         Long categoriaId = scanner.nextLong();
         scanner.nextLine();
 
         System.out.println("Fornecedores disponíveis: ");
-        listarFornecedores().forEach(f -> System.out.println(f.getId() + " - " + f.getNome()));
+        listFornecedores().forEach(f -> System.out.println(f.getId() + " - " + f.getNome()));
 
         System.out.println("Digite o Id do fornecedor do produto: ");
         Long fornecedorId = scanner.nextLong();
