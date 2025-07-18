@@ -20,13 +20,25 @@ public class Produto {
     private Categoria categoria;
     @ManyToMany(mappedBy = "produtos")
     private List<Pedido> pedidos = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "fornecedor_id")
+    private Fornecedor fornecedor;
 
-    public Produto(String nome, Double preco) {
+    public Produto(String nome, Double preco, Fornecedor fornecedor) {
         this.nome = nome;
         this.preco = preco;
+        this.fornecedor = fornecedor;
     }
 
     public Produto(){}
+
+    public Fornecedor getFornecedor() {
+        return fornecedor;
+    }
+
+    public void setFornecedor(Fornecedor fornecedor) {
+        this.fornecedor = fornecedor;
+    }
 
     public List<Pedido> getPedidos() {
         return pedidos;
@@ -74,6 +86,7 @@ public class Produto {
                 "\nId: '" + id + '\'' +
                 "\nNome: '" + nome + '\'' +
                 "\nPreco: " + preco + "\'" +
-                "\nCategoria: " + categoria.getNome();
+                "\nCategoria: " + categoria.getNome() +
+                "\nFornecedor: " + fornecedor.getNome();
     }
 }

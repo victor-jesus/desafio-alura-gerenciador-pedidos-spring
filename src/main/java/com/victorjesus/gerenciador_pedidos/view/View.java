@@ -1,12 +1,15 @@
 package com.victorjesus.gerenciador_pedidos.view;
 
 import com.victorjesus.gerenciador_pedidos.domain.Categoria;
+import com.victorjesus.gerenciador_pedidos.domain.Fornecedor;
 import com.victorjesus.gerenciador_pedidos.domain.Pedido;
 import com.victorjesus.gerenciador_pedidos.domain.Produto;
 import com.victorjesus.gerenciador_pedidos.repository.CategoriaRepository;
+import com.victorjesus.gerenciador_pedidos.repository.FornecedorRepository;
 import com.victorjesus.gerenciador_pedidos.repository.PedidoRepository;
 import com.victorjesus.gerenciador_pedidos.repository.ProdutoRepository;
 import com.victorjesus.gerenciador_pedidos.services.CategoriaService;
+import com.victorjesus.gerenciador_pedidos.services.FornecedorService;
 import com.victorjesus.gerenciador_pedidos.services.PedidoService;
 import com.victorjesus.gerenciador_pedidos.services.ProdutoService;
 
@@ -17,12 +20,14 @@ public class View {
     private ProdutoService produtoService;
     private CategoriaService categoriaService;
     private PedidoService pedidoService;
+    private FornecedorService fornecedorService;
     Scanner scanner = new Scanner(System.in);
 
-    public View(ProdutoRepository produtoRepository, CategoriaRepository categoriaRepository, PedidoRepository pedidoRepository) {
+    public View(ProdutoRepository produtoRepository, CategoriaRepository categoriaRepository, PedidoRepository pedidoRepository, FornecedorRepository fornecedorRepository) {
         this.produtoService = new ProdutoService(produtoRepository);
         this.categoriaService = new CategoriaService(categoriaRepository);
         this.pedidoService = new PedidoService(pedidoRepository);
+        this.fornecedorService = new FornecedorService(fornecedorRepository);
     }
 
     public void showConsole(){
@@ -37,6 +42,8 @@ public class View {
                     4 - Criar nova categoria
                     5 - Criar pedido
                     6 - Listar pedido
+                    7 - Salvar fornecedor
+                    8 - Listar fornecedores
                 
                     0 - Sair
                 """;
@@ -73,6 +80,14 @@ public class View {
                     listarPedidos().forEach(System.out::println);
                     break;
                 }
+                case 7: {
+                    salvarFornecedor();
+                    break;
+                }
+                case 8: {
+                    listarFornecedores().forEach(System.out::println);
+                    break;
+                }
                 case 0: {
                     System.out.println("Fechando...");
                     break;
@@ -83,12 +98,26 @@ public class View {
         } while(option != 0);
     }
 
+    private List<Fornecedor> listarFornecedores() {
+        return fornecedorService.list();
+    }
+
+    private void salvarFornecedor() {
+        System.out.print("Digite o nome do fornecedor: ");
+        String nomeFornecedor = scanner.nextLine();
+
+        fornecedorService.salvar(new Fornecedor(nomeFornecedor));
+        System.out.println("--- Fornecedor salvo ---");
+    }
+
     private List<Pedido> listarPedidos() {
+        System.out.println("--- Listando ---");
         return pedidoService.list();
     }
 
     private void criarPedido() {
-        getProdutos().forEach(p -> System.out.println(p.getId() + " " + p.getNome() + " - " + p.getCategoria() + " (" + p.getPreco() + ")"));
+        System.out.println("----");
+        getProdutos().forEach(p -> System.out.println(" ID: " + p.getId() + " - " + p.getNome() + " - " + p.getCategoria().getNome() + " (" + p.getPreco() + ")"));
         System.out.println("Digite os Ids dos produtos (Separados por virgula): ");
         var idsProdutos = scanner.nextLine();
 
@@ -97,12 +126,16 @@ public class View {
         List<Produto> produtosPedido = new ArrayList<>();
         for(String id: ArrIds){
             Optional<Produto> produto = produtoService.buscarPorId(Long.parseLong(id.trim()));
-            produto.ifPresentOrElse(produtosPedido::add, () -> System.out.println("Produto de Id " + id + " não encontrado"));
+            produto.ifPresentOrElse(p -> {
+                produtosPedido.add(p);
+                System.out.println("Salvando " + p.getNome() + " no pedido.");
+            }, () -> System.out.println("Produto de Id " + id + " não encontrado"));
         }
 
         if(!produtosPedido.isEmpty()){
             Pedido pedido = new Pedido(LocalDate.now(), produtosPedido);
             pedidoService.salvar(pedido);
+            System.out.println("--- Pedido salvo com sucesso ---");
         } else {
             System.out.println("Não há produtos no seu pedido.");
         }
@@ -138,10 +171,18 @@ public class View {
         Long categoriaId = scanner.nextLong();
         scanner.nextLine();
 
-        var categoria = categoriaService.buscarPorId(categoriaId);
+        System.out.println("Fornecedores disponíveis: ");
+        listarFornecedores().forEach(f -> System.out.println(f.getId() + " - " + f.getNome()));
 
-        if(categoria.isPresent()){
-            Produto produto = new Produto(nomeProduto, precoProduto);
+        System.out.println("Digite o Id do fornecedor do produto: ");
+        Long fornecedorId = scanner.nextLong();
+        scanner.nextLine();
+
+        var categoria = categoriaService.buscarPorId(categoriaId);
+        var fornecedor = fornecedorService.buscarPorId(fornecedorId);
+
+        if(categoria.isPresent() && fornecedor.isPresent()){
+            Produto produto = new Produto(nomeProduto, precoProduto, fornecedor.get());
             produto.setCategoria(categoria.get());
 
             produtoService.salvar(produto);
