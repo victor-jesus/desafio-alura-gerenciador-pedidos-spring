@@ -20,11 +20,11 @@ public class ProdutoService<T> implements IPersistance<Produto> {
 
     @Override
     public Optional<Produto> buscarPorId(Long id) {
-        return produtoRepository.getProdutoById(id);
+        return produtoRepository.findById(id);
     }
 
     @Override
-    public Produto salvar(Produto produto) {
-        return produtoRepository.save(produto);
+    public void salvar(Produto produto) {
+        produtoRepository.save(produto);
     }
 }

@@ -1,24 +1,28 @@
 package com.victorjesus.gerenciador_pedidos.view;
 
 import com.victorjesus.gerenciador_pedidos.domain.Categoria;
+import com.victorjesus.gerenciador_pedidos.domain.Pedido;
 import com.victorjesus.gerenciador_pedidos.domain.Produto;
 import com.victorjesus.gerenciador_pedidos.repository.CategoriaRepository;
+import com.victorjesus.gerenciador_pedidos.repository.PedidoRepository;
 import com.victorjesus.gerenciador_pedidos.repository.ProdutoRepository;
 import com.victorjesus.gerenciador_pedidos.services.CategoriaService;
+import com.victorjesus.gerenciador_pedidos.services.PedidoService;
 import com.victorjesus.gerenciador_pedidos.services.ProdutoService;
 
-import java.util.List;
-import java.util.OptionalDouble;
-import java.util.Scanner;
+import java.time.LocalDate;
+import java.util.*;
 
 public class View {
     private ProdutoService produtoService;
     private CategoriaService categoriaService;
+    private PedidoService pedidoService;
     Scanner scanner = new Scanner(System.in);
 
-    public View(ProdutoRepository produtoRepository, CategoriaRepository categoriaRepository) {
+    public View(ProdutoRepository produtoRepository, CategoriaRepository categoriaRepository, PedidoRepository pedidoRepository) {
         this.produtoService = new ProdutoService(produtoRepository);
         this.categoriaService = new CategoriaService(categoriaRepository);
+        this.pedidoService = new PedidoService(pedidoRepository);
     }
 
     public void showConsole(){
@@ -26,10 +30,13 @@ public class View {
 
         do{
             String console = """
+                    
                     1 - Listar produtos do banco
                     2 - Salvar produto no banco
                     3 - Listar categorias
                     4 - Criar nova categoria
+                    5 - Criar pedido
+                    6 - Listar pedido
                 
                     0 - Sair
                 """;
@@ -58,6 +65,14 @@ public class View {
                     criarCategoria();
                     break;
                 }
+                case 5: {
+                    criarPedido();
+                    break;
+                }
+                case 6: {
+                    listarPedidos().forEach(System.out::println);
+                    break;
+                }
                 case 0: {
                     System.out.println("Fechando...");
                     break;
@@ -66,6 +81,31 @@ public class View {
                     System.out.println("Opção invalida");
             }
         } while(option != 0);
+    }
+
+    private List<Pedido> listarPedidos() {
+        return pedidoService.list();
+    }
+
+    private void criarPedido() {
+        getProdutos().forEach(p -> System.out.println(p.getId() + " " + p.getNome() + " - " + p.getCategoria() + " (" + p.getPreco() + ")"));
+        System.out.println("Digite os Ids dos produtos (Separados por virgula): ");
+        var idsProdutos = scanner.nextLine();
+
+        var ArrIds = idsProdutos.split(",");
+
+        List<Produto> produtosPedido = new ArrayList<>();
+        for(String id: ArrIds){
+            Optional<Produto> produto = produtoService.buscarPorId(Long.parseLong(id.trim()));
+            produto.ifPresentOrElse(produtosPedido::add, () -> System.out.println("Produto de Id " + id + " não encontrado"));
+        }
+
+        if(!produtosPedido.isEmpty()){
+            Pedido pedido = new Pedido(LocalDate.now(), produtosPedido);
+            pedidoService.salvar(pedido);
+        } else {
+            System.out.println("Não há produtos no seu pedido.");
+        }
     }
 
     private void criarCategoria() {

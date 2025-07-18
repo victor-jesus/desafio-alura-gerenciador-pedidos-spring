@@ -1,6 +1,7 @@
 package com.victorjesus.gerenciador_pedidos;
 
 import com.victorjesus.gerenciador_pedidos.repository.CategoriaRepository;
+import com.victorjesus.gerenciador_pedidos.repository.PedidoRepository;
 import com.victorjesus.gerenciador_pedidos.repository.ProdutoRepository;
 import com.victorjesus.gerenciador_pedidos.view.View;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ public class GerenciadorPedidosApplication implements CommandLineRunner {
 	ProdutoRepository produtoRepository;
 	@Autowired
 	CategoriaRepository categoriaRepository;
+	@Autowired
+	PedidoRepository pedidoRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(GerenciadorPedidosApplication.class, args);
@@ -21,7 +24,7 @@ public class GerenciadorPedidosApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		View view = new View(produtoRepository, categoriaRepository);
+		View view = new View(produtoRepository, categoriaRepository, pedidoRepository);
 		view.showConsole();
 	}
 }

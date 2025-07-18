@@ -28,6 +28,14 @@ public class Produto {
 
     public Produto(){}
 
+    public List<Pedido> getPedidos() {
+        return pedidos;
+    }
+
+    public void setPedidos(List<Pedido> pedidos) {
+        this.pedidos = pedidos;
+    }
+
     public Categoria getCategoria() {
         return categoria;
     }

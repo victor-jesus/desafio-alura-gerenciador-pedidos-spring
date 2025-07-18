@@ -3,6 +3,7 @@ package com.victorjesus.gerenciador_pedidos.domain;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,18 +16,26 @@ public class Pedido {
     private Long id;
     @Column
     private LocalDate data;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)3
     @JoinTable(name = "pedido_produto",
     joinColumns = @JoinColumn(name = "pedido_id"),
     inverseJoinColumns = @JoinColumn(name = "produto_id"))
     private List<Produto> produtos = new ArrayList<>();
 
-    public Pedido(Long id, LocalDate data) {
-        this.id = id;
+    public Pedido(LocalDate data, List<Produto> produtos) {
         this.data = data;
+        this.produtos = produtos;
     }
 
     public Pedido() {
+    }
+
+    public List<Produto> getProdutos() {
+        return produtos;
+    }
+
+    public void setProdutos(List<Produto> produtos) {
+        this.produtos = produtos;
     }
 
     public Long getId() {
@@ -47,9 +56,11 @@ public class Pedido {
 
     @Override
     public String toString() {
-        return "Pedido{" +
-                "id=" + id +
-                ", data=" + data +
-                '}';
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        return "\nPedido: " +
+                "\nNumero do pedido: " + id +
+                "\nData: " + data.format(dateTimeFormatter) +
+                "\nProdutos: " + produtos;
     }
 }

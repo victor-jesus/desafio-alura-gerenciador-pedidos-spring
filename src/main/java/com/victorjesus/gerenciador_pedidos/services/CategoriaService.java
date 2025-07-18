@@ -24,8 +24,8 @@ public class CategoriaService implements IPersistance<Categoria> {
     }
 
     @Override
-    public Categoria salvar(Categoria item) {
-        return categoriaRepository.save(item);
+    public void salvar(Categoria item) {
+        categoriaRepository.save(item);
     }
 }
 
