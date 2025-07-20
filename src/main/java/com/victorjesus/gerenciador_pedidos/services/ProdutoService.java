@@ -6,7 +6,7 @@ import com.victorjesus.gerenciador_pedidos.repository.ProdutoRepository;
 import java.util.List;
 import java.util.Optional;
 
-public class ProdutoService<T> implements IPersistance<Produto> {
+public class ProdutoService implements IPersistance<Produto> {
     private ProdutoRepository produtoRepository;
 
     public ProdutoService(ProdutoRepository produtoRepository) {
